@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
     int progress;
     int counter;
     boolean isRun;
+    Thread listThread;
     Handler handlerText;
     Handler handlerList;
     ListView listView;
@@ -135,9 +136,10 @@ public class MainActivity extends Activity {
         showList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progress = seekBar.getProgress();
                 if (!isRun) {
                     isRun = true;
-                    new Thread(new Runnable() {
+                    listThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
                             while (counter < namesList.size()) {
@@ -150,10 +152,14 @@ public class MainActivity extends Activity {
                                     handlerList.sendEmptyMessage(counter);
                                     counter++;
                                 }
+                                else if (progress == -1){
+                                    break;
+                                }
                             }
                             isRun = false;
                         }
-                    }).start();
+                    });
+                    listThread.start();
                 }
             }
         });
@@ -166,5 +172,26 @@ public class MainActivity extends Activity {
                 counter = 0;
             }
         });
+        hideList.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                progress = -1;
+                namesAdapter.clear();
+                namesAdapter.notifyDataSetChanged();
+                counter = 0;
+                return false;
+            }
+        });
+    }
+    @Override
+    protected void onStop() {
+        progress = -1;
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        progress = -1;
+        super.onDestroy();
     }
 }

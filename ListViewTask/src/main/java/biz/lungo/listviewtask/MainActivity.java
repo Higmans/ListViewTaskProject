@@ -143,7 +143,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void run() {
                             while (counter < namesList.size()) {
-                                if (progress != 0) {
+                                if (progress > 0) {
                                     try {
                                         Thread.sleep(1000 / progress);
                                     } catch (InterruptedException e) {
